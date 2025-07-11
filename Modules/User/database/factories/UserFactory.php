@@ -3,6 +3,7 @@
 namespace Modules\User\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Modules\User\Enums\UserRole;
 use Modules\User\Models\User;
 
 class UserFactory extends Factory
@@ -17,10 +18,13 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $roles = array_map(fn($role) => $role->value, UserRole::cases());
+
         return [
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'password' => 'password',
+            'role' => $this->faker->randomElement($roles)
         ];
     }
 }

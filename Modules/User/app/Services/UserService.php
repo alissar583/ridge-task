@@ -11,10 +11,8 @@ class UserService
 
     public function __construct(protected UserRepositoryInterface $userRepository) {}
 
-    public function getUsers(array $filters, int $perPage = 15)
+    public function getUsers(UserFilterDto $filterData, int $perPage = 15)
     {
-        $filterData = new UserFilterDto($filters);
-
         return $this->userRepository->getUsersPaginated($filterData, $perPage);
     }
 

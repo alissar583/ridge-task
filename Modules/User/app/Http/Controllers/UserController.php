@@ -4,6 +4,7 @@ namespace Modules\User\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\User\DTOs\UserFilterDto;
 use Modules\User\Http\Requests\UserListRequest;
 use Modules\User\Models\User;
 use Modules\User\Services\UserService;
@@ -51,10 +52,10 @@ class UserController extends Controller
 
     public function index(UserListRequest $request)
     {
+        $filterData = UserFilterDto::fromArray($request->only(['name', 'email']));
         $perPage = $request->input('per_page', 15);
-        $filters = $request->only(['name', 'email']);
 
-        $users = $this->userService->getUsers($filters, $perPage);
+        $users = $this->userService->getUsers($filterData, $perPage);
         $users = UserResource::collection($users)->response()->getData();
 
         return $this->successResponse($users);
@@ -92,14 +93,4 @@ class UserController extends Controller
         $user = UserResource::make($user);
         return $this->successResponse($user);
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
 }
