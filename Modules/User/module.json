@@ -3,7 +3,8 @@
     "alias": "user",
     "description": "",
     "keywords": [],
-    "priority": 0,
+     "active": true,
+    "priority": 1,
     "providers": [
         "Modules\\User\\Providers\\UserServiceProvider"
     ],

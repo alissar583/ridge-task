@@ -2,8 +2,9 @@
     "name": "Notification",
     "alias": "notification",
     "description": "",
+     "active": true,
     "keywords": [],
-    "priority": 0,
+    "priority": 3,
     "providers": [
         "Modules\\Notification\\Providers\\NotificationServiceProvider"
     ],

@@ -2,8 +2,9 @@
     "name": "Post",
     "alias": "post",
     "description": "",
+     "active": true,
     "keywords": [],
-    "priority": 0,
+    "priority": 2,
     "providers": [
         "Modules\\Post\\Providers\\PostServiceProvider"
     ],
