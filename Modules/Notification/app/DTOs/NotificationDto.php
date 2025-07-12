@@ -2,7 +2,7 @@
 
 namespace Modules\Notification\DTOs;
 
-class CreateNotificationDto
+class NotificationDto
 {
     public function __construct(
         public readonly string $title,

@@ -2,7 +2,8 @@
 
 namespace Modules\Notification\Services;
 
-use Modules\Notification\DTOs\CreateNotificationDto;
+use Modules\Notification\DTOs\NotificationDto;
+use Modules\Notification\Jobs\SendNotificationJob;
 use Modules\Notification\Models\Notification;
 use Modules\Notification\Repositories\Contracts\NotificationRepositoryInterface;
 
@@ -16,9 +17,11 @@ class NotificationService
     }
 
 
-    public function store(CreateNotificationDto $data): Notification
+    public function store(NotificationDto $data): Notification
     {
-        return $this->notificationRepository->create($data);
+        $notification = $this->notificationRepository->create($data);
+        SendNotificationJob::dispatch($data);
+        return $notification;
     }
 
     public function destroy(Notification $post)
