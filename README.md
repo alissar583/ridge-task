@@ -214,15 +214,68 @@ php artisan test --filter=UserApiTest
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
+## Docker Setup
 
+This project uses Docker to simplify local development, including Redis and a queue worker.
 
+### Prerequisites
+- Docker installed and running
+- Docker Desktop (or Docker CLI)
+- Internet access outside restricted regions (e.g., not blocked by Docker Hub)
 
+If you're in a restricted region, use a VPN to pull base images like php, redis, and nginx.
 
+### Setup Steps
+1. Clone the project
+```bash
+git clone https://github.com/alissar583/ridge-task.git
+cd ridge-task
+```
 
+2. Copy .env
+```bash
+cp .env.example .env
+```
 
+3. Update these lines in .env:
+```
+DB_HOST=host.docker.internal
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
 
+QUEUE_CONNECTION=redis
+REDIS_HOST=redis
+```
 
+4. If you're using Laravel modules, make sure module service providers are registered.
 
+5. Build and start Docker containers
+```bash
+docker-compose up -d --build
+```
+This will build the app, run Nginx, Redis, and a queue worker.
 
+6. Install Composer dependencies
+```bash
+docker-compose exec app composer install
+```
 
+7. Generate app key
+```bash
+docker-compose exec app php artisan key:generate
+```
+
+1. Run migrations 
+```bash
+docker-compose exec app php artisan module:make-migrate --all
+```
+
+### Access the App
+Visit: http://localhost:8000
+
+### Queue Worker
+The queue worker runs automatically inside the queue container.
+When you dispatch jobs, they will be processed in real-time.
 
