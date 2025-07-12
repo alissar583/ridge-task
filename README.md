@@ -216,7 +216,7 @@ This project is open-sourced software licensed under the [MIT license](https://o
 
 ## Queue Configuration
 
-### Configure Laravel to Use Redis
+### Configure Laravel to Use Redis (don't forget to Install PHP Redis Extension extension=php_redis.dll)
 In your `.env` file:
 ```
 QUEUE_CONNECTION=redis
@@ -293,5 +293,6 @@ Visit: http://localhost:8000
 ### Queue Worker
 The queue worker runs automatically inside the queue container.
 When you dispatch jobs, they will be processed in real-time.
+
 
 
