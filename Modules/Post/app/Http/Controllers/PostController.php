@@ -112,7 +112,7 @@ class PostController extends Controller
     {
         $dto = CreatePostDto::fromArray(
             $request->validated(),
-            auth('api')->id()
+            auth()->id()
         );
 
         $post = $this->postService->store($dto);
