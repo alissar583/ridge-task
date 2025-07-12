@@ -3,13 +3,13 @@
 namespace Modules\Notification\Repositories;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Modules\Notification\DTOs\NotificationDto;
+use Modules\Notification\DTOs\CreateNotificationDto;
 use Modules\Notification\Models\Notification;
 use Modules\Notification\Repositories\Contracts\NotificationRepositoryInterface;
 
 class NotificationRepository implements NotificationRepositoryInterface
 {
-    public function create(NotificationDto $data): Notification
+    public function create(CreateNotificationDto $data): Notification
     {
         return Notification::create($data->toArray());
     }

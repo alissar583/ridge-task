@@ -4,7 +4,7 @@ namespace Modules\Notification\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Notification\DTOs\NotificationDto;
+use Modules\Notification\DTOs\CreateNotificationDto;
 use Modules\Notification\Http\Requests\NotificationListRequest;
 use Modules\Notification\Http\Requests\StoreNotificationRequest;
 use Modules\Notification\Models\Notification;
@@ -101,7 +101,7 @@ class NotificationController extends Controller
      */
     public function store(StoreNotificationRequest $request)
     {
-        $dto = NotificationDto::fromArray(
+        $dto = CreateNotificationDto::fromArray(
             $request->validated(),
         );
 
