@@ -1,11 +1,10 @@
 <?php
 
-namespace Modules\User\Repositories\Contracts;
+namespace Modules\Post\Repositories\Contracts;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Modules\Post\DTOs\CreatePostDto;
 use Modules\Post\Models\Post;
-use Modules\User\Models\User;
 
 interface PostRepositoryInterface
 {

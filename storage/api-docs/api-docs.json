@@ -6,6 +6,234 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/notifications": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Get a paginated list of notifications",
+                "description": "Returns a paginated list of notifications. Supports optional pagination.",
+                "operationId": "17461e0bd5c21ee62eecdc88225b888f",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of notifications per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15,
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of notifications",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenericPaginatedResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Create a new notification",
+                "description": "Creates a new notification. Only authenticated users are allowed to access this endpoint.",
+                "operationId": "c7847f38a75e842f5916be62e532c5fb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "My first notification"
+                                    },
+                                    "body": {
+                                        "type": "string",
+                                        "maxLength": 10000,
+                                        "example": "This is a body of the notification.",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Notification created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "notification created successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Notification"
+                                        },
+                                        "meta": {
+                                            "type": "string",
+                                            "example": null,
+                                            "nullable": true
+                                        },
+                                        "links": {
+                                            "type": "string",
+                                            "example": null,
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "title": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The title field is required."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications/{id}": {
+            "delete": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Delete a specific notification",
+                "description": "Deletes a notification by its ID.",
+                "operationId": "deleteNotification",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the notification to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "notification deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "notification deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Notification not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not Found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/posts": {
             "get": {
                 "tags": [
@@ -45,7 +273,7 @@
                     "Posts"
                 ],
                 "summary": "Create a new post",
-                "description": "Creates a new post. Only authenticated users with the 'editor' role are allowed to access this endpoint.",
+                "description": "Creates a new post. Only authenticated users with the 'editor' or 'admin' role are allowed to access this endpoint.",
                 "operationId": "fe118c324b772c844b17a0c3147fc741",
                 "requestBody": {
                     "required": true,
@@ -135,7 +363,7 @@
                         }
                     },
                     "403": {
-                        "description": "Forbidden - User does not have the 'editor' role",
+                        "description": "Forbidden - User does not have the 'editor' or 'admin' role",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -671,6 +899,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Notifications",
+            "description": "Notifications"
+        },
         {
             "name": "Posts",
             "description": "Posts"

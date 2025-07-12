@@ -5,7 +5,7 @@ namespace Modules\Post\Repositories;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Modules\Post\DTOs\CreatePostDto;
 use Modules\Post\Models\Post;
-use Modules\User\Repositories\Contracts\PostRepositoryInterface;
+use Modules\Post\Repositories\Contracts\PostRepositoryInterface;
 
 class PostRepository implements PostRepositoryInterface
 {

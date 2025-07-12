@@ -50,7 +50,7 @@ class PostController extends Controller
      * @OA\Post(
      *     path="/api/posts",
      *     summary="Create a new post",
-     *      description="Creates a new post. Only authenticated users with the 'editor' role are allowed to access this endpoint.",
+     *      description="Creates a new post. Only authenticated users with the 'editor' or 'admin' role are allowed to access this endpoint.",
 
      *     tags={"Posts"},
      *     security={{"bearerAuth":{}}},
@@ -93,7 +93,7 @@ class PostController extends Controller
      *     ),
      *  *     @OA\Response(
      *         response=403,
-     *         description="Forbidden - User does not have the 'editor' role",
+     *         description="Forbidden - User does not have the 'editor' or 'admin' role",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="This action is unauthorized.")
      *         )
@@ -111,8 +111,8 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
         $dto = CreatePostDto::fromArray(
-            data: $request->validated(),
-            user_id: auth('api')->id()
+            $request->validated(),
+            auth('api')->id()
         );
 
         $post = $this->postService->store($dto);

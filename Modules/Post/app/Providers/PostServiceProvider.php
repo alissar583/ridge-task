@@ -5,7 +5,7 @@ namespace Modules\Post\Providers;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Modules\Post\Repositories\PostRepository;
-use Modules\User\Repositories\Contracts\PostRepositoryInterface;
+use Modules\Post\Repositories\Contracts\PostRepositoryInterface;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
