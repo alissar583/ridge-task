@@ -31,15 +31,14 @@ class UserRepository implements UserRepositoryInterface
         return $user->load('posts');
     }
 
-    public function firstOrCreate(UserDto $user): User
+
+    public function findByEmail(string $email): ?User
     {
-        return User::firstOrCreate(
-            ['email' => $user->email],
-            [
-                'name' => $user->name,
-                'role' => $user->role,
-                'password' => $user->password
-            ]
-        );
+        return User::where('email', $email)->first();
+    }
+
+    public function create(UserDto $userDto) :User
+    {
+        return User::create($userDto->toArray());
     }
 }

@@ -11,5 +11,6 @@ interface UserRepositoryInterface
 {
     public function getUsersPaginated(UserFilterDto $filterData, int $perPage): LengthAwarePaginator;
     public function show(User $user): User;
-    public function firstOrCreate(UserDto $user);
+    public function create(UserDto $user): User;
+    public function findByEmail(string $email): ?User;
 }

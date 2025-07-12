@@ -7,11 +7,45 @@
     },
     "paths": {
         "/api/posts": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Get a paginated list of posts",
+                "description": "Returns a paginated list of posts. Supports optional pagination.",
+                "operationId": "aff7daa3ad99fc6a0b123166311bcf68",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of posts per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15,
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of posts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenericPaginatedResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "Posts"
                 ],
                 "summary": "Create a new post",
+                "description": "Creates a new post. Only authenticated users with the 'editor' role are allowed to access this endpoint.",
                 "operationId": "fe118c324b772c844b17a0c3147fc741",
                 "requestBody": {
                     "required": true,
@@ -99,6 +133,130 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "description": "Forbidden - User does not have the 'editor' role",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This action is unauthorized."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/posts/{id}": {
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Delete a specific post",
+                "description": "Deletes a post by its ID. Role-based access (admin or editor), and ownership verification through policy authorization. Only the post owner can delete their post.",
+                "operationId": "deletePost",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the post to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Post deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - User does not have the required role or is not the owner of the post",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This action is unauthorized."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Post not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Not Found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -114,8 +272,8 @@
                     "Authentication"
                 ],
                 "summary": "Mock login with role-based authorization",
-                "description": "Authenticate a user with email and role, returning user info and token.",
-                "operationId": "93e0c7ba09ad60d244cdc627dd3056f8",
+                "description": "Authenticate or register a user using email and role. If a user exists with the same email and the same role, a token is returned. If the email exists with a different role, a validation error is returned. If the email does not exist, a new mock user will be created.",
+                "operationId": "mockLogin",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -127,20 +285,20 @@
                                 ],
                                 "properties": {
                                     "email": {
-                                        "description": "User email",
+                                        "description": "The user's email address",
                                         "type": "string",
                                         "format": "email",
                                         "example": "user@example.com"
                                     },
                                     "role": {
-                                        "description": "Role of the user",
+                                        "description": "The user's role",
                                         "type": "string",
                                         "enum": [
                                             "admin",
                                             "editor",
                                             "user"
                                         ],
-                                        "example": "user"
+                                        "example": "editor"
                                     }
                                 },
                                 "type": "object"
@@ -150,7 +308,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful login",
+                        "description": "Successful login or mock registration",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -162,7 +320,7 @@
                                                 },
                                                 "token": {
                                                     "type": "string",
-                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGciOi..."
                                                 }
                                             },
                                             "type": "object"
@@ -178,7 +336,7 @@
                         }
                     },
                     "422": {
-                        "description": "Validation error",
+                        "description": "Validation error - Email exists with different role or required fields missing",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -188,6 +346,15 @@
                                             "example": "The given data was invalid."
                                         },
                                         "errors": {
+                                            "properties": {
+                                                "email": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "This email is already used with a different role. Please use another email."
+                                                    }
+                                                }
+                                            },
                                             "type": "object"
                                         }
                                     },

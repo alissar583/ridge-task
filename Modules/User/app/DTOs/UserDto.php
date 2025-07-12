@@ -20,4 +20,14 @@ class UserDto
             password: $data['password']
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'email' => $this->email,
+            'role' => $this->role,
+            'password' => $this->password,
+        ];
+    }
 }

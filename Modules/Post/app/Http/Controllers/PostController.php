@@ -4,26 +4,54 @@ namespace Modules\Post\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Modules\Post\DTOs\CreatePostDto;
+use Modules\Post\Http\Requests\PostListRequest;
 use Modules\Post\Http\Requests\StorePostRequest;
+use Modules\Post\Models\Post;
 use Modules\Post\Services\PostService;
 use Modules\Post\Transformers\PostResource;
 
 class PostController extends Controller
 {
     public function __construct(protected PostService $postService) {}
+
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/posts",
+     *     summary="Get a paginated list of posts",
+     *     description="Returns a paginated list of posts. Supports optional pagination.",
+     *     tags={"Posts"},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of posts per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10, default=15)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Paginated list of posts",
+     *         @OA\JsonContent(ref="#/components/schemas/GenericPaginatedResponse")
+     *     )
+     * )
      */
-    public function index()
+    public function index(PostListRequest $request)
     {
-        return view('post::index');
+        $perPage = $request->input('per_page', 15);
+
+        $posts = $this->postService->getPosts($perPage);
+        $posts = PostResource::collection($posts)->response()->getData();
+
+        return $this->successResponse($posts, "Paginated list of posts");
     }
 
     /**
      * @OA\Post(
      *     path="/api/posts",
      *     summary="Create a new post",
+     *      description="Creates a new post. Only authenticated users with the 'editor' role are allowed to access this endpoint.",
+
      *     tags={"Posts"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -62,6 +90,21 @@ class PostController extends Controller
      *                 )
      *             )
      *         )
+     *     ),
+     *  *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - User does not have the 'editor' role",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="This action is unauthorized.")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -79,28 +122,59 @@ class PostController extends Controller
     }
 
     /**
-     * Show the specified resource.
+     * @OA\Delete(
+     *     path="/api/posts/{id}",
+     *     summary="Delete a specific post",
+     *     description="Deletes a post by its ID. Role-based access (admin or editor), and ownership verification through policy authorization. Only the post owner can delete their post.",
+     *     operationId="deletePost",
+     *     tags={"Posts"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the post to delete",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Post deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Post deleted successfully")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - User does not have the required role or is not the owner of the post",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="This action is unauthorized.")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=404,
+     *         description="Post not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Not Found")
+     *         )
+     *     )
+     * )
      */
-    public function show($id)
+    public function destroy(Post $post)
     {
-        return view('post::show');
+        Gate::authorize('delete', $post);
+        $this->postService->destroy($post);
+        return $this->successResponse(message: "Post deleted successfully");
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('post::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
 }
