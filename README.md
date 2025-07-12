@@ -214,6 +214,21 @@ php artisan test --filter=UserApiTest
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
+## Queue Configuration
+
+### Configure Laravel to Use Redis
+In your `.env` file:
+```
+QUEUE_CONNECTION=redis
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+```
+
+### Run the Queue Worker
+```bash
+php artisan queue:work redis
+```
+
 ## Docker Setup
 
 This project uses Docker to simplify local development, including Redis and a queue worker.
@@ -267,7 +282,7 @@ docker-compose exec app composer install
 docker-compose exec app php artisan key:generate
 ```
 
-1. Run migrations 
+8. Run migrations 
 ```bash
 docker-compose exec app php artisan module:make-migrate --all
 ```
@@ -278,4 +293,5 @@ Visit: http://localhost:8000
 ### Queue Worker
 The queue worker runs automatically inside the queue container.
 When you dispatch jobs, they will be processed in real-time.
+
 
